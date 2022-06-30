@@ -43,15 +43,13 @@ export class PureMarketMaking extends Strategy {
     const sell = parseFloat(quote[0].quote_price);
 
     const midPrice = parseFloat(((buy + sell) / 2).toFixed(3));
-
-    const buyInt = Math.round(buy * 10 ** 3);
+    const midInt = Math.round(midPrice * 10 ** 3);
     const buyRange = [...new Array(this.ORDER_COUNT)]
-      .map((x, idx) => buyInt - this.ORDER_GAP * (idx + this.TARGET_SPREAD))
+      .map((x, idx) => midInt - this.ORDER_GAP * (idx + this.TARGET_SPREAD))
       .map((x) => x / 10 ** 3);
 
-    const sellInt = Math.round(buy * 10 ** 3);
     const sellRange = [...new Array(this.ORDER_COUNT)]
-      .map((x, idx) => sellInt + this.ORDER_GAP * (idx + this.TARGET_SPREAD))
+      .map((x, idx) => midInt + this.ORDER_GAP * (idx + this.TARGET_SPREAD))
       .map((x) => x / 10 ** 3);
 
     const buyOrders = orders.filter(
