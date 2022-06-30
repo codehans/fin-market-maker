@@ -137,26 +137,30 @@ export class PureMarketMaking extends Strategy {
           funds: coins(o.amount, this.denoms.quote),
         })
       ),
-    ];
-    await this.connector.signAndBroadcast(msgs);
+    ].filter((x) => !!x) as EncodeObject[];
+    msgs.length && (await this.connector.signAndBroadcast(msgs));
     await new Promise((r) => setTimeout(r, this.FREQUENCY));
 
     return this.run();
   };
 
   withdrawOrders = (orders: OrderResponse[]) =>
-    this.connector.msgExecuteContract(
-      this.address,
-      { withdraw_orders: { order_idxs: orders.map((o) => o.idx) } },
-      []
-    );
+    orders.length
+      ? this.connector.msgExecuteContract(
+          this.address,
+          { withdraw_orders: { order_idxs: orders.map((o) => o.idx) } },
+          []
+        )
+      : null;
 
   retractOrders = (orders: OrderResponse[]) =>
-    this.connector.msgExecuteContract(
-      this.address,
-      { retract_orders: { order_idxs: orders.map((o) => o.idx) } },
-      []
-    );
+    orders.length
+      ? this.connector.msgExecuteContract(
+          this.address,
+          { retract_orders: { order_idxs: orders.map((o) => o.idx) } },
+          []
+        )
+      : null;
 
   submitOrder = ({ price, funds }: { price: number; funds: Coin[] }) =>
     this.connector.msgExecuteContract(
